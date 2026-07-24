@@ -1,0 +1,1 @@
+-IC:/Users/Rawnak/DOCUME~1/personal/projects/TODOLI~1/ToDoList/build/DESKTO~1/TODOLI~1/include -isystem C:/Qt/6.11.1/mingw_64/include/QtCore -isystem C:/Qt/6.11.1/mingw_64/include -isystem "C:/Qt/6.11.1/mingw_64/mkspecs/win32-g++" -isystem C:/Qt/6.11.1/mingw_64/include/QtWidgets -isystem C:/Qt/6.11.1/mingw_64/include/QtGui
