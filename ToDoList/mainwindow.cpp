@@ -9,6 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->listWidget,
+            &QListWidget::itemChanged,
+            this,
+            &MainWindow::onItemChanged);
     try
     {
         todoList.loadTasks();
@@ -43,12 +47,8 @@ void MainWindow::on_pushButton_clicked()
 {
     try{
     QString addedTitle = ui->lineEdit->text() ;
-
-    task addedTask(addedTitle);
     todoList.addTask(addedTitle);
-
-    ui->listWidget->addItem(addedTitle) ;
-
+    refreshList();
     ui->lineEdit->clear();
     }
     catch (const std::exception &e)
@@ -86,19 +86,29 @@ void MainWindow::on_pushButton_2_clicked()
         QMessageBox::warning(this, "Error", e.what());
     }
 }
+
+void MainWindow::onItemChanged(QListWidgetItem *item)
+{
+    int index = ui->listWidget->row(item);
+    todoList.toggleTask(index);
+
+}
 void MainWindow::refreshList()
 {
+    ui->listWidget->blockSignals(true);
     ui->listWidget->clear();
 
     for (const auto& task : todoList.getTasks())
     {
         QString title = task.getTitle();
-
+        QListWidgetItem *item = new QListWidgetItem(title);
+        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
         if (task.isCompleted())
-        {
-            title = "✓ " + title;
-        }
+            item->setCheckState(Qt::Checked);
+        else
+            item->setCheckState(Qt::Unchecked);
 
-        ui->listWidget->addItem(title);
+        ui->listWidget->addItem(item);
     }
+    ui->listWidget->blockSignals(false);
 }

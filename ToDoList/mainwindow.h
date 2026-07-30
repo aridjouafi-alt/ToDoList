@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 #include <QCloseEvent>
 #include <QMainWindow>
+#include <QListWidgetItem>
 #include "ToDoList.h"
 
 QT_BEGIN_NAMESPACE
@@ -27,6 +28,8 @@ private slots:
     void on_pushButton_4_clicked();
 
     void on_pushButton_2_clicked();
+
+    void onItemChanged(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;

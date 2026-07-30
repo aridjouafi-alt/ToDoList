@@ -40,71 +40,62 @@ void todolist::completeTask(int index)
 
     tasks[index].markCompleted();
 }
+void todolist::toggleTask(int index)
+{
+    if (index < 0 || index >= tasks.size())
+        throw std::out_of_range("Invalid index");
 
+    tasks[index].toggleCompleted();
+}
 void todolist::saveTasks()
 {
-    std::ofstream file("tasks.txt");
+    std::ofstream file ("tasks.txt") ;
     if (!file)
     {
-        throw std::runtime_error("File could not be opened.");
+        throw std::runtime_error("the file cannot be opened.");
     }
-    for (const auto& task : tasks)
+    else
     {
-        QString str = task.getTitle() ;
-        file << str.toStdString() << ':' << task.isCompleted() << '\n';
+        for (const task & task : tasks)
+        {        QString qstring = task.getTitle() ;
+            file << qstring.toStdString() << ":" << task.isCompleted() << "\n" ;
+        }
     }
-    file.close();
 }
 void todolist::loadTasks()
 {
-    std::ifstream file("tasks.txt");
+    std::ifstream file ("tasks.txt") ;
     if (!file)
     {
-        throw std::runtime_error("File could not be opened.");
+        throw std::runtime_error("the file is not found.");
     }
-
-    tasks.clear();
-
-    std::string line;
-
-    bool status;
-
-    while (std::getline(file, line))
+    else
     {
-        std::string title = "";
-        std::string statusStr = "";
-        int i = 0;
-
-        // Read the title
-        while (i < line.size() && line[i] != ':')
+        tasks.clear();
+        std::string line ;
+        while (getline(file,line))
         {
-            title += line[i];
-            i++;
-        }
-
-        i++; // Skip the ':'
-
-        // Read the status
-        while (i < line.size())
-        {
-            statusStr += line[i];
-            i++;
-        }
-        QString qtitle = QString::fromStdString(title) ;
-        if (statusStr == "0")
-            status = false;
-        else if (statusStr== "1")
-            status = true;
-        else
-            throw std::runtime_error("Invalid task status in file.");
-
-        task t (qtitle);
-        t.setCompleted (status) ;
-        tasks.push_back(t);
+            std::size_t separator = line.find(':') ;
+            if ( separator == std::string::npos )
+            {
+                throw std::runtime_error("invalid format used .");
+            }
+            bool status;
+            std::string strtitle = line.substr(0,separator);
+            if (line.substr(separator+1,line.size()- separator ) == "1")
+            {    status = true ;}
+            else {
+                if (line.substr(separator+1,line.size() - separator ) == "0")
+                {    status = false ;}
+                else
+                {
+                    throw std::runtime_error("the status is wrong in the file .");
+                }}
+                task newtask(QString::fromStdString(strtitle));
+                newtask.setCompleted(status) ;
+                tasks.push_back(newtask);
     }
 }
-
-
-
+}
 
 
