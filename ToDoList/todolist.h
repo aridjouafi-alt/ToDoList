@@ -15,6 +15,7 @@ public:
     void deleteTask(int index);
     const std::vector<task>& getTasks() const;
     void completeTask ( int index ) ;
+    void editTask(int index, QString newTitle);
     void toggleTask ( int index ) ;
     void saveTasks();
     void loadTasks();

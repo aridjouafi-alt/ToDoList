@@ -9,10 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    connect(ui->listWidget,
-            &QListWidget::itemChanged,
-            this,
-            &MainWindow::onItemChanged);
     try
     {
         todoList.loadTasks();
@@ -58,19 +54,6 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-void MainWindow::on_pushButton_4_clicked()
-{
-    try
-    {
-        int row = ui->listWidget->currentRow();
-        todoList.deleteTask(row);
-        delete ui->listWidget->takeItem(row);
-    }
-    catch (const std::out_of_range& e)
-    {
-        QMessageBox::warning(this, "Error", e.what());
-    }
-}
 void MainWindow::on_pushButton_2_clicked()
 {
     try
@@ -87,28 +70,82 @@ void MainWindow::on_pushButton_2_clicked()
     }
 }
 
-void MainWindow::onItemChanged(QListWidgetItem *item)
-{
-    int index = ui->listWidget->row(item);
-    todoList.toggleTask(index);
-
-}
 void MainWindow::refreshList()
 {
     ui->listWidget->blockSignals(true);
     ui->listWidget->clear();
 
-    for (const auto& task : todoList.getTasks())
+    for (int i = 0; i < todoList.getTasks().size(); i++)
     {
-        QString title = task.getTitle();
-        QListWidgetItem *item = new QListWidgetItem(title);
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-        if (task.isCompleted())
-            item->setCheckState(Qt::Checked);
-        else
-            item->setCheckState(Qt::Unchecked);
+        const auto& task = todoList.getTasks()[i];
+        QListWidgetItem *item = new QListWidgetItem();
+        QWidget *rowWidget = new QWidget;
 
+        QHBoxLayout *layout = new QHBoxLayout(rowWidget);
+        QCheckBox *checkBox = new QCheckBox;
+        QLabel *label = new QLabel(task.getTitle());
+        QPushButton *editButton = new QPushButton("Edit");
+        connect(editButton, &QPushButton::clicked, this,
+                [this, i]()
+                {
+                    bool ok;
+                    QString newTitle = QInputDialog::getText(
+                        this,
+                        "Edit Task",
+                        "The new title:",
+                        QLineEdit::Normal,
+                        todoList.getTasks()[i].getTitle(),
+                        &ok
+                        );
+
+                    if (ok)
+                    {
+                        try
+                        {
+                            todoList.editTask(i, newTitle);
+                            refreshList();
+                        }
+                        catch (const std::exception& e)
+                        {
+                            QMessageBox::warning(this, "Error", e.what());
+                        }
+                    }
+                });
+        QPushButton *deleteButton = new QPushButton("Delete");
+        connect(deleteButton, &QPushButton::clicked, this,
+                [this, i]()
+                {
+                    try
+                    {
+                        todoList.deleteTask(i);
+                        refreshList();
+                    }
+                    catch (const std::exception& e)
+                    {
+                        QMessageBox::warning(this, "Error", e.what());
+                    }
+                });
+        checkBox->setChecked(task.isCompleted());
+        connect(checkBox, &QCheckBox::toggled, this,
+                [this, i](bool)
+                {
+                    todoList.toggleTask(i);
+                    refreshList();
+                });
+        layout->addWidget(checkBox);
+        layout->addWidget(label);
+        layout->addStretch();
+        layout->addWidget(editButton);
+        layout->addWidget(deleteButton);
+        item->setSizeHint(rowWidget->sizeHint());
         ui->listWidget->addItem(item);
+        ui->listWidget->setItemWidget(item, rowWidget);
     }
     ui->listWidget->blockSignals(false);
 }
+
+
+
+
+
+

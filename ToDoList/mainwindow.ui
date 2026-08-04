@@ -70,15 +70,7 @@
       <widget class="QListWidget" name="listWidget"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="text">
-          <string>delete</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QHBoxLayout" name="horizontalLayout_2"/>
      </item>
     </layout>
    </widget>

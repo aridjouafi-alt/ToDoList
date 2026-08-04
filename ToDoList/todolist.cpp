@@ -47,6 +47,16 @@ void todolist::toggleTask(int index)
 
     tasks[index].toggleCompleted();
 }
+void todolist::editTask(int index, QString newTitle)
+{
+    if (index < 0 || index >= tasks.size())
+        throw std::out_of_range("Invalid task index.");
+
+    if (newTitle.trimmed().isEmpty())
+        throw std::invalid_argument("Task title cannot be empty.");
+
+    tasks[index].setTitle(newTitle);
+}
 void todolist::saveTasks()
 {
     std::ofstream file ("tasks.txt") ;

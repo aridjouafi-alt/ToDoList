@@ -3,6 +3,8 @@
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QCheckBox>
+#include <QInputDialog>
 #include "ToDoList.h"
 
 QT_BEGIN_NAMESPACE
@@ -24,8 +26,6 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
-    void on_pushButton_4_clicked();
 
     void on_pushButton_2_clicked();
 
