@@ -1,11 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
+#include "ToDoList.h"
+
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include <QCheckBox>
 #include <QInputDialog>
-#include "ToDoList.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,10 +28,6 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void onItemChanged(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;

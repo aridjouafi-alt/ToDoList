@@ -54,41 +54,32 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    try
-    {
-        int row = ui->listWidget->currentRow();
-        todoList.completeTask(row);
-        ui->listWidget->item(row)->setText(
-            "✓ " + ui->listWidget->item(row)->text()
-            );
-    }
-    catch (const std::out_of_range& e)
-    {
-        QMessageBox::warning(this, "Error", e.what());
-    }
-}
-
 void MainWindow::refreshList()
 {
-    ui->listWidget->blockSignals(true);
     ui->listWidget->clear();
-
     for (int i = 0; i < todoList.getTasks().size(); i++)
     {
-        const auto& task = todoList.getTasks()[i];
+        const task& task = todoList.getTasks()[i];
         QListWidgetItem *item = new QListWidgetItem();
         QWidget *rowWidget = new QWidget;
-
         QHBoxLayout *layout = new QHBoxLayout(rowWidget);
         QCheckBox *checkBox = new QCheckBox;
+        checkBox->setChecked(task.isCompleted());
+        connect(checkBox, &QCheckBox::toggled,
+                this,
+                [this, i](bool)
+                {
+                    todoList.toggleTask(i);
+                    refreshList();
+                });
         QLabel *label = new QLabel(task.getTitle());
         QPushButton *editButton = new QPushButton("Edit");
-        connect(editButton, &QPushButton::clicked, this,
+        connect(editButton, &QPushButton::clicked,
+                this,
                 [this, i]()
                 {
                     bool ok;
+
                     QString newTitle = QInputDialog::getText(
                         this,
                         "Edit Task",
@@ -112,7 +103,8 @@ void MainWindow::refreshList()
                     }
                 });
         QPushButton *deleteButton = new QPushButton("Delete");
-        connect(deleteButton, &QPushButton::clicked, this,
+        connect(deleteButton, &QPushButton::clicked,
+                this,
                 [this, i]()
                 {
                     try
@@ -126,12 +118,7 @@ void MainWindow::refreshList()
                     }
                 });
         checkBox->setChecked(task.isCompleted());
-        connect(checkBox, &QCheckBox::toggled, this,
-                [this, i](bool)
-                {
-                    todoList.toggleTask(i);
-                    refreshList();
-                });
+
         layout->addWidget(checkBox);
         layout->addWidget(label);
         layout->addStretch();
@@ -141,8 +128,9 @@ void MainWindow::refreshList()
         ui->listWidget->addItem(item);
         ui->listWidget->setItemWidget(item, rowWidget);
     }
-    ui->listWidget->blockSignals(false);
 }
+
+
 
 
 
